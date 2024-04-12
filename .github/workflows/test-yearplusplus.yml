@@ -1,0 +1,32 @@
+name: Update Year
+
+on:
+  push:
+
+jobs:
+  update_year:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update year in specified files
+        uses: endormi/yearplusplus@v1
+        with:
+          files: 'LICENSE'    # Provide the file(s) you want to update
+
+      - name: Setup Git configuration
+        run: |
+          git config user.name "Year++"
+          git config user.email "<>"
+
+      - name: Commit changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -am "Update copyright year"
+            git push origin ${{ github.head_ref }}
+          else
+            echo "No changes to commit."
+          fi
